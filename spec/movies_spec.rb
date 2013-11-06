@@ -1,56 +1,65 @@
 require_relative '../lib/movies'
 
+describe "movies context" do
 
-users = []
+    before :each do
+        @armagedon = Movie.new("Armagedon")
+        @batman = Movie.new("Batman")
+        @movie_catalog = Catalog.new
+        @movie_catalog.add(@armagedon)
+        @peter = User.new("Peter")
+        @mary = User.new("Mary")
+        @paquito = User.new("Paquito")
+    end
 
+    describe "tests for movies adding, deleting, etc." do 
 
+        it "creates a new empty comment" do
+            expect(@batman.add_comment(@paquito,"")).to eq([[@paquito,""]])
+        end
 
-describe "tests for movies adding, deleting, etc." do 
+        it "creates a new comment with content" do
+            expect(@batman.add_comment(@mary, "pretty good")).to eq([[@mary,"pretty good"]])
+        end
 
-	it "creates a new empty comment" do
-		movie = Movie.new("Batman")
-		expect(movie.add_comment("Paquito","")).to eq([["Paquito",""]])
-	end
+        it "adds more than one comment for a @batman" do 
+            @batman.add_comment(@mary, "pretty good")
+            @batman.add_comment(@peter, "a mi me ha molao")
+            expect(@batman.comments).to eq([[@mary, "pretty good"], [@peter, "a mi me ha molao"]])
+        end
+    end
 
-	it "creates a new comment with content" do
-		movie = Movie.new("Batman")
-		expect(movie.add_comment("Pedrito", "puta mierda")).to eq([["Pedrito","puta mierda"]])
-	end
+    describe "retrieve users: " do
 
-	it "adds more than one comment for a movie" do 
-		movie = Movie.new("Batman")
-		movie.add_comment("Pedrito", "puta mierda")
-		movie.add_comment("Juanito", "a mi me ha molao")
-		expect(movie.comments).to eq([["Pedrito", "puta mierda"], ["Juanito", "a mi me ha molao"]])
-	end
+        before :each do
+            @movie_catalog.add(@batman)
+        end
 
+        it "recovers users for a movie with no comments" do
+            expect(@movie_catalog.users_commented(@batman)).to eq([])
+        end
 
+        it "recovers a single user which commented on a movie" do
+            @batman.add_comment(@peter,"me ha molao")
+            expect(@movie_catalog.users_commented(@batman)).to eq [@peter]
+        end
+
+        it "recovers a 2 users which commented on a movie" do
+            @batman.add_comment(@peter,"me ha molao")
+            @batman.add_comment(@paquito, "no ha estado mal")
+            expect(@movie_catalog.users_commented(@batman)).to eq([@peter, @paquito])
+        end
+    end
+
+    describe "favorites: " do
+        it "should list the favourite movies of a user" do
+            @peter.add_favorite("Batman")
+            expect(@peter.add_favorite("Armagedon")).to eq(["Batman", "Armagedon"])
+        end
+    end
 end
 
-describe "retrieve users: " do
 
-	it "recovers users for a movie with no comments" do
-		movies = Catalog.new
-		movie = Movie.new("Armagedon")
-		movies.add(movie)
-		expect(movies.users_commented(movie.title)).to eq([])
-	end
 
-	it "recovers a single user which commented on a movie" do
-		catalog = Catalog.new
-		movie = Movie.new("Armagedon")
-		catalog.add(movie)
-		movie.add_comment("Perico","me ha molao")
-		expect(catalog.users_commented("Armagedon")).to eq(["Perico"])
-	end
 
-	it "recovers a 2 users which commented on a movie" do
-		catalog = Catalog.new
-		movie = Movie.new("Armagedon")
-		catalog.add(movie)
-		movie.add_comment("Perico","me ha molao")
-		movie.add_comment("Pablito", "no ha estado mal")
-		expect(catalog.users_commented("Armagedon")).to eq(["Perico", "Pablito"])
-	end
 
-end
