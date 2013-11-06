@@ -27,11 +27,30 @@ describe "tests for movies adding, deleting, etc." do
 
 end
 
-describe "test user information" do
+describe "retrieve users: " do
 
 	it "recovers users for a movie with no comments" do
+		movies = Catalog.new
 		movie = Movie.new("Armagedon")
-		expect(movie.users_comented(movie.title)).to eq([])
+		movies.add(movie)
+		expect(movies.users_commented(movie.title)).to eq([])
+	end
+
+	it "recovers a single user which commented on a movie" do
+		catalog = Catalog.new
+		movie = Movie.new("Armagedon")
+		catalog.add(movie)
+		movie.add_comment("Perico","me ha molao")
+		expect(catalog.users_commented("Armagedon")).to eq(["Perico"])
+	end
+
+	it "recovers a 2 users which commented on a movie" do
+		catalog = Catalog.new
+		movie = Movie.new("Armagedon")
+		catalog.add(movie)
+		movie.add_comment("Perico","me ha molao")
+		movie.add_comment("Pablito", "no ha estado mal")
+		expect(catalog.users_commented("Armagedon")).to eq(["Perico", "Pablito"])
 	end
 
 end
