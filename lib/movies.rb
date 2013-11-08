@@ -63,12 +63,12 @@ class Catalog
         if  distance_base_case?(user1, user2)
             0
         else
-            distance_to_others = []
-            distance_zero_users(user1).each do |next_user|
+            distance_to_others = [999999999999]
+            distance_zero_users(user2).each do |next_user|
                 if !visited.include? next_user
                     visited << next_user
                     visited_new = visited
-                    distance_to_others << distance(user2, next_user, visited_new)
+                    distance_to_others << distance(user1, next_user, visited_new)
                 end
             end
             distance_to_others.min + 1
@@ -77,9 +77,7 @@ class Catalog
 
     def distance_base_case?(user1, user2)
         distance_zero_users(user1).include?(user2) || 
-        user1 == user2 || 
-        distance_zero_users(user1).empty? || 
-        distance_zero_users(user2).empty?
+        user1 == user2
     end
 
     def distance_zero_users(user)
